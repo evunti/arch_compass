@@ -1,7 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const questions: Array<{ id: string; text: string; scores: any }> = [
   // Cowboy (The Pure Spirit)
@@ -321,15 +324,13 @@ export const questions: Array<{ id: string; text: string; scores: any }> = [
   },
 ];
 
-interface QuestionnaireProps {
-  sessionId: string;
-  onComplete: () => void;
-}
+export default function Questionnaire() {
+  const router = useRouter();
 
-export default function Questionnaire({
-  sessionId,
-  onComplete,
-}: QuestionnaireProps) {
+  // Generate a session ID for this test session
+  const [sessionId] = useState(
+    () => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  );
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const [shuffledQuestions] = useState(() => {
@@ -486,7 +487,8 @@ export default function Questionnaire({
       }
 
       toast.success("Results saved!");
-      onComplete();
+      // Navigate back to home page after completion
+      router.push("/");
     } catch (error) {
       console.error(error);
       toast.error("Failed to save results. Please try again.");

@@ -48,12 +48,12 @@ export default function Home() {
       </div>
 
       <div className="flex justify-center">
-        <button
-          onClick={onStartTest}
-          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-lg text-xl transition-colors shadow-lg hover:shadow-xl"
+        <Link
+          href="/questionnaire"
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-lg text-xl transition-colors shadow-lg hover:shadow-xl inline-block"
         >
           Take the Test
-        </button>
+        </Link>
       </div>
 
       <h3 className="text-3xl font-bold text-gray-800 mb-4">
