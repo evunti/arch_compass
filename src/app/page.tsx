@@ -1,8 +1,8 @@
-interface HomeProps {
-  onStartTest: () => void;
-}
+"use client";
 
-export default function Home({ onStartTest }: HomeProps) {
+import Link from "next/link";
+
+export default function Home() {
   return (
     <div className="text-center space-y-8">
       <div className="space-y-4">
