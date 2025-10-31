@@ -5,6 +5,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import NavBar from "../../../components/navbar";
 
 export const questions: Array<{ id: string; text: string; scores: any }> = [
   // Cowboy (The Pure Spirit)
@@ -487,8 +488,8 @@ export default function Questionnaire() {
       }
 
       toast.success("Results saved!");
-      // Navigate back to home page after completion
-      router.push("/");
+      // Navigate to results page with session ID
+      router.push(`/results?sessionId=${sessionId}`);
     } catch (error) {
       console.error(error);
       toast.error("Failed to save results. Please try again.");
@@ -500,73 +501,77 @@ export default function Questionnaire() {
   const currentAnswer = answers[currentQuestion.originalIndex];
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">
-          Personality Assessment
-        </h2>
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-          <div
-            className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          ></div>
+    <div>
+      <NavBar />
+
+      <div className="max-w-2xl mx-auto space-y-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+            Personality Assessment
+          </h2>
+          <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+            <div
+              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+          <p className="text-gray-600">
+            Question {currentQuestionIndex + 1} of 28
+          </p>
         </div>
-        <p className="text-gray-600">
-          Question {currentQuestionIndex + 1} of 28
-        </p>
-      </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-8">
-        <h3 className="text-xl font-semibold text-gray-800 mb-6 text-center">
-          {currentQuestion.text}
-        </h3>
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h3 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+            {currentQuestion.text}
+          </h3>
 
-        <div className="space-y-3">
-          {[
-            { value: 1, label: "Strongly Disagree" },
-            { value: 2, label: "Disagree" },
-            { value: 3, label: "Neutral" },
-            { value: 4, label: "Agree" },
-            { value: 5, label: "Strongly Agree" },
-          ].map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => handleAnswer(value)}
-              className={`w-full p-4 text-left rounded-lg border-2 transition-colors ${
-                currentAnswer === value
-                  ? "border-purple-600 bg-purple-50 text-purple-800"
-                  : "border-gray-200 hover:border-gray-300 text-gray-700"
-              }`}
-            >
-              <div className="flex items-center space-x-3">
-                <div
-                  className={`w-4 h-4 rounded-full border-2 ${
-                    currentAnswer === value
-                      ? "border-purple-600 bg-purple-600"
-                      : "border-gray-300"
-                  }`}
-                ></div>
-                <span className="font-medium">{label}</span>
-              </div>
-            </button>
-          ))}
+          <div className="space-y-3">
+            {[
+              { value: 1, label: "Strongly Disagree" },
+              { value: 2, label: "Disagree" },
+              { value: 3, label: "Neutral" },
+              { value: 4, label: "Agree" },
+              { value: 5, label: "Strongly Agree" },
+            ].map(({ value, label }) => (
+              <button
+                key={value}
+                onClick={() => handleAnswer(value)}
+                className={`w-full p-4 text-left rounded-lg border-2 transition-colors ${
+                  currentAnswer === value
+                    ? "border-purple-600 bg-purple-50 text-purple-800"
+                    : "border-gray-200 hover:border-gray-300 text-gray-700"
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <div
+                    className={`w-4 h-4 rounded-full border-2 ${
+                      currentAnswer === value
+                        ? "border-purple-600 bg-purple-600"
+                        : "border-gray-300"
+                    }`}
+                  ></div>
+                  <span className="font-medium">{label}</span>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="flex justify-between">
-        <button
-          onClick={handlePrevious}
-          disabled={currentQuestionIndex === 0}
-          className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors"
-        >
-          Previous
-        </button>
-        <button
-          onClick={handleNext}
-          className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-        >
-          {currentQuestionIndex === 27 ? "Complete Test" : "Next"}
-        </button>
+        <div className="flex justify-between">
+          <button
+            onClick={handlePrevious}
+            disabled={currentQuestionIndex === 0}
+            className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors"
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNext}
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+          >
+            {currentQuestionIndex === 27 ? "Complete Test" : "Next"}
+          </button>
+        </div>
       </div>
     </div>
   );
