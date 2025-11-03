@@ -326,7 +326,19 @@ export default function Results() {
                         )
                         .join(" + ")}
                 </span>
-                <span>{dominantType === "all four" ? "⚖️" : "⚖️"}</span>
+                <span>
+                  {dominantType === "all four"
+                    ? "⚖️"
+                    : dominantType
+                        .split("+")
+                        .map(
+                          (type: string) =>
+                            archetypeEmojis[
+                              type.toLowerCase() as keyof typeof archetypeEmojis
+                            ] || "📊"
+                        )
+                        .join("")}
+                </span>
               </>
             ) : (
               <>

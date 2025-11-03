@@ -75,10 +75,10 @@ export default function NavBar() {
       if (rawType === "all four") {
         emoji = "⚖️";
       } else if (rawType.includes("+")) {
-        // For combinations, show the first archetype's emoji + balance symbol
-        const firstType = rawType.split("+")[0] || "";
-        const firstEmoji = archetypeEmojis[firstType.toLowerCase()] || "";
-        emoji = firstEmoji + "⚖️";
+        // For combinations, show all archetype emojis
+        emoji = rawType.split("+")
+          .map((type: string) => archetypeEmojis[type.toLowerCase()] || "📊")
+          .join("");
       } else {
         // Single archetype
         emoji = archetypeEmojis[rawType.toLowerCase()] || "⚖️";

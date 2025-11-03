@@ -78,9 +78,13 @@ export default function PreviousResults({
             ? rawType === "all four"
               ? "⚖️"
               : rawType.includes("+")
-                ? (archetypeEmojis as any)[
-                    (rawType.split("+")[0] || "").toLowerCase()
-                  ] + "⚖️"
+                ? rawType
+                    .split("+")
+                    .map(
+                      (type: string) =>
+                        (archetypeEmojis as any)[type.toLowerCase()] || "📊"
+                    )
+                    .join("")
                 : (archetypeEmojis as any)[rawType.toLowerCase()] || "📊"
             : "📊";
           const subtitle = when ? when.toLocaleString() : "Unknown date";
