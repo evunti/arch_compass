@@ -1,23 +1,23 @@
-export default function NavBar({
-  onNavigate,
-}: {
-  onNavigate?: (page: "landing" | "history") => void;
-}) {
+"use client";
+
+import Link from "next/link";
+
+export default function NavBar() {
   return (
     <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm h-16 flex justify-between items-center shadow-sm px-4">
-      <button
-        onClick={() => onNavigate?.("landing")}
+      <Link
+        href="/"
         className="text-xl font-semibold text-purple-600 hover:text-purple-700 transition-colors"
       >
         The Archetype Compass
-      </button>
+      </Link>
       <div className="flex items-center gap-4">
-        <button
-          onClick={() => onNavigate?.("history")}
-          className="text-sm text-gray-600 hover:text-gray-800"
+        <Link
+          href="/history"
+          className="text-sm text-gray-600 hover:text-gray-800 hover:underline transition-colors"
         >
           History
-        </button>
+        </Link>
       </div>
     </header>
   );
