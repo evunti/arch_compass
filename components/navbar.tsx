@@ -1,8 +1,94 @@
 "use client";
 
 import Link from "next/link";
+import { useQuery } from "convex/react";
+import { api } from "../convex/_generated/api";
+import { useEffect, useState } from "react";
 
 export default function NavBar() {
+  const [mostRecentResult, setMostRecentResult] = useState<any>(null);
+
+  const loggedInUser = useQuery(api.auth.loggedInUser);
+  const userResults = useQuery(
+    api.tests.getAllTestResults,
+    loggedInUser && !loggedInUser.isAnonymous
+      ? { userId: loggedInUser._id?.toString?.() }
+      : "skip"
+  );
+
+  useEffect(() => {
+    const items: any[] = [];
+
+    // Get results from database
+    if (Array.isArray(userResults) && userResults.length) {
+      for (const r of userResults) items.push(r);
+    }
+
+    // Get results from localStorage
+    try {
+      if (typeof window !== "undefined") {
+        const raw = localStorage.getItem("resultsHistory");
+        if (raw) {
+          const localHistory = JSON.parse(raw);
+          if (Array.isArray(localHistory) && localHistory.length) {
+            for (const r of localHistory) items.push(r);
+          }
+        }
+      }
+    } catch (e) {}
+
+    // Sort by completion date and get most recent
+    if (items.length > 0) {
+      items.sort((a, b) => {
+        const dateA = a.completedAt || 0;
+        const dateB = b.completedAt || 0;
+        return dateB - dateA;
+      });
+      setMostRecentResult(items[0]);
+    }
+  }, [userResults]);
+
+  function titleFromType(type: string | undefined | null) {
+    if (!type) return "Your Result";
+    if (type === "all four") return "All Four";
+    return type
+      .split("+")
+      .map((t) => t.charAt(0).toUpperCase() + t.slice(1))
+      .join(" + ");
+  }
+
+  const archetypeEmojis: Record<string, string> = {
+    cowboy: "🤠",
+    pirate: "☠️",
+    werewolf: "🐺",
+    vampire: "🦇",
+  };
+
+  const getDisplayInfo = () => {
+    if (!mostRecentResult) return { text: "History", emoji: "" };
+
+    const rawType = mostRecentResult.dominantType || null;
+    const title = titleFromType(rawType);
+
+    let emoji = "📊";
+    if (rawType) {
+      if (rawType === "all four") {
+        emoji = "⚖️";
+      } else if (rawType.includes("+")) {
+        // For combinations, show the first archetype's emoji + balance symbol
+        const firstType = rawType.split("+")[0] || "";
+        const firstEmoji = archetypeEmojis[firstType.toLowerCase()] || "";
+        emoji = firstEmoji + "⚖️";
+      } else {
+        // Single archetype
+        emoji = archetypeEmojis[rawType.toLowerCase()] || "⚖️";
+      }
+    }
+
+    return { text: title, emoji };
+  };
+
+  const { text, emoji } = getDisplayInfo();
   return (
     <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm h-16 flex justify-between items-center shadow-sm px-4">
       <Link
@@ -14,9 +100,10 @@ export default function NavBar() {
       <div className="flex items-center gap-4">
         <Link
           href="/history"
-          className="text-sm text-gray-600 hover:text-gray-800 hover:underline transition-colors"
+          className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 hover:underline transition-colors"
         >
-          History
+          {emoji && <span className="text-lg">{emoji}</span>}
+          <span>{text}</span>
         </Link>
       </div>
     </header>

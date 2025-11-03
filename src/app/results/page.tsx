@@ -109,6 +109,7 @@ export default function Results() {
     router.push("/questionnaire");
   };
   const [showAnswers, setShowAnswers] = useState(false);
+  const [showPreviousResults, setShowPreviousResults] = useState(false);
   const sessionResult = useQuery(
     api.tests.getTestResult,
     sessionId ? { sessionId } : "skip"
@@ -126,6 +127,43 @@ export default function Results() {
   if (!result && Array.isArray(userResults) && userResults.length > 0) {
     result = userResults[0];
   }
+
+  // Get all results including localStorage for previous results view
+  const allResults: any[] = [];
+  if (Array.isArray(userResults) && userResults.length) {
+    for (const r of userResults) allResults.push(r);
+  }
+
+  // Add localStorage results
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("resultsHistory");
+      if (raw) {
+        const localHistory = JSON.parse(raw);
+        if (Array.isArray(localHistory) && localHistory.length) {
+          for (const r of localHistory) {
+            // Avoid duplicates by checking sessionId
+            const isDuplicate = allResults.some(
+              (existing) => existing.sessionId === r.sessionId
+            );
+            if (!isDuplicate) {
+              allResults.push(r);
+            }
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // Sort all results by completion date (most recent first)
+  allResults.sort((a, b) => {
+    const dateA = a.completedAt || 0;
+    const dateB = b.completedAt || 0;
+    return dateB - dateA;
+  });
+
+  // Get previous results (excluding the current/most recent one)
+  const previousResults = allResults.slice(1);
 
   if (!sessionId) {
     return (
@@ -262,7 +300,7 @@ export default function Results() {
     <div>
       {" "}
       <NavBar />
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-4xl mx-auto space-y-8 py-12">
         <div className="text-center">
           <h2 className="text-4xl font-bold text-gray-800 mb-2">
             Your Results
@@ -449,7 +487,132 @@ export default function Results() {
           >
             Retake Test
           </button>
+          {previousResults.length > 0 && (
+            <button
+              onClick={() => setShowPreviousResults(!showPreviousResults)}
+              className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+            >
+              {showPreviousResults
+                ? "Hide Previous Results"
+                : "View Previous Results"}
+            </button>
+          )}
         </div>
+
+        {showPreviousResults && previousResults.length > 0 && (
+          <div className="bg-white rounded-lg shadow-lg p-6 mt-8">
+            <h4 className="text-xl font-bold mb-4 text-center">
+              Previous Test Results
+            </h4>
+            <div className="space-y-4">
+              {previousResults.map((prevResult, idx) => {
+                const when = prevResult.completedAt
+                  ? new Date(prevResult.completedAt)
+                  : null;
+                const rawType = prevResult.dominantType || null;
+                const title = rawType
+                  ? rawType === "all four"
+                    ? "All Four"
+                    : rawType
+                        .split("+")
+                        .map(
+                          (t: string) => t.charAt(0).toUpperCase() + t.slice(1)
+                        )
+                        .join(" + ")
+                  : "Result";
+                const emoji = rawType
+                  ? rawType === "all four"
+                    ? "⚖️"
+                    : rawType.includes("+")
+                      ? (archetypeEmojis as any)[
+                          (rawType.split("+")[0] || "").toLowerCase()
+                        ] + "⚖️"
+                      : (archetypeEmojis as any)[rawType.toLowerCase()] || "📊"
+                  : "📊";
+                const subtitle = when ? when.toLocaleString() : "Unknown date";
+
+                return (
+                  <div
+                    key={idx}
+                    className="rounded-lg p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+                  >
+                    <div>
+                      <div className="font-semibold flex items-center gap-2">
+                        <span className="text-xl">{emoji}</span>
+                        <span>{title}</span>
+                      </div>
+                      <div className="text-sm text-gray-500">{subtitle}</div>
+                      {prevResult.scores && (
+                        <div className="text-sm text-gray-600 mt-1">
+                          <span className="mr-3">
+                            Cowboy:{" "}
+                            {Math.round(
+                              (prevResult.scores.cowboy /
+                                (prevResult.scores.cowboy +
+                                  prevResult.scores.pirate +
+                                  prevResult.scores.werewolf +
+                                  prevResult.scores.vampire)) *
+                                100
+                            )}
+                            %
+                          </span>
+                          <span className="mr-3">
+                            Pirate:{" "}
+                            {Math.round(
+                              (prevResult.scores.pirate /
+                                (prevResult.scores.cowboy +
+                                  prevResult.scores.pirate +
+                                  prevResult.scores.werewolf +
+                                  prevResult.scores.vampire)) *
+                                100
+                            )}
+                            %
+                          </span>
+                          <span className="mr-3">
+                            Werewolf:{" "}
+                            {Math.round(
+                              (prevResult.scores.werewolf /
+                                (prevResult.scores.cowboy +
+                                  prevResult.scores.pirate +
+                                  prevResult.scores.werewolf +
+                                  prevResult.scores.vampire)) *
+                                100
+                            )}
+                            %
+                          </span>
+                          <span>
+                            Vampire:{" "}
+                            {Math.round(
+                              (prevResult.scores.vampire /
+                                (prevResult.scores.cowboy +
+                                  prevResult.scores.pirate +
+                                  prevResult.scores.werewolf +
+                                  prevResult.scores.vampire)) *
+                                100
+                            )}
+                            %
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => {
+                        const searchParams = new URLSearchParams();
+                        if (prevResult.sessionId) {
+                          searchParams.set("sessionId", prevResult.sessionId);
+                        }
+                        router.push(`/results?${searchParams.toString()}`);
+                      }}
+                      className="px-4 py-2 bg-purple-600 text-white rounded font-semibold hover:bg-purple-700 transition-colors"
+                    >
+                      View
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
