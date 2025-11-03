@@ -99,13 +99,23 @@ export default function NavBar() {
         The Archetype Compass
       </Link>
       <div className="flex items-center gap-4">
-        <Link
-          href="/history"
-          className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 hover:underline transition-colors"
-        >
-          {emoji && <span className="text-lg">{emoji}</span>}
-          <span>{text}</span>
-        </Link>
+        {mostRecentResult ? (
+          <Link
+            href="/history"
+            className="hover:scale-110 transition-transform duration-200"
+            title={text}
+          >
+            <span className="text-3xl">{emoji}</span>
+          </Link>
+        ) : (
+          <Link
+            href="/history"
+            className="hover:scale-110 transition-transform duration-200"
+            title="History"
+          >
+            <span className="text-3xl">📊</span>
+          </Link>
+        )}
       </div>
     </header>
   );
