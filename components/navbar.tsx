@@ -76,7 +76,8 @@ export default function NavBar() {
         emoji = "⚖️";
       } else if (rawType.includes("+")) {
         // For combinations, show all archetype emojis
-        emoji = rawType.split("+")
+        emoji = rawType
+          .split("+")
           .map((type: string) => archetypeEmojis[type.toLowerCase()] || "📊")
           .join("");
       } else {
