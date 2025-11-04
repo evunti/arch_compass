@@ -8,7 +8,7 @@ export default function Home() {
     <div>
       <NavBar />
 
-      <div className="text-center space-y-8">
+      <div className="text-center space-y-8 py-12 px-4 sm:px-6 lg:px-8">
         <div className="space-y-4">
           <h1 className="text-6xl font-bold text-gray-800 mb-4">
             The Archetype Compass

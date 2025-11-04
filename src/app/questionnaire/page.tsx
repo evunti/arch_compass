@@ -504,7 +504,7 @@ export default function Questionnaire() {
     <div>
       <NavBar />
 
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="max-w-2xl mx-auto space-y-8 py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
             Personality Assessment

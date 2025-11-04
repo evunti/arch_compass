@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toast } from "sonner";
@@ -103,7 +103,7 @@ const personalityBlurbs = {
   },
 };
 
-export default function Results() {
+function ResultsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get("sessionId");
@@ -303,7 +303,7 @@ export default function Results() {
     <div>
       {" "}
       <NavBar />
-      <div className="max-w-4xl mx-auto space-y-8 py-12">
+      <div className="max-w-4xl mx-auto space-y-8 py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-4xl font-bold text-gray-800 mb-2">
             Your Results
@@ -516,5 +516,27 @@ export default function Results() {
         />
       </div>
     </div>
+  );
+}
+
+export default function Results() {
+  return (
+    <Suspense
+      fallback={
+        <div>
+          <NavBar />
+          <div className="max-w-4xl mx-auto space-y-8 py-12">
+            <div className="flex justify-center items-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                <p className="mt-4 text-gray-600">Loading your results...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ResultsContent />
+    </Suspense>
   );
 }
