@@ -127,6 +127,28 @@ function ResultsContent() {
   );
 
   let result = sessionResult || null;
+
+  // If no result from Convex, check localStorage
+  if (!result && sessionId && typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("resultsHistory");
+      if (raw) {
+        const localHistory = JSON.parse(raw);
+        if (Array.isArray(localHistory)) {
+          const localResult = localHistory.find(
+            (r: any) => r.sessionId === sessionId
+          );
+          if (localResult) {
+            result = localResult;
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error loading from localStorage:", e);
+    }
+  }
+
+  // Fallback to first result if still no result
   if (!result && Array.isArray(userResults) && userResults.length > 0) {
     result = userResults[0];
   }

@@ -90,6 +90,15 @@ export default function NavBar() {
   };
 
   const { text, emoji } = getDisplayInfo();
+
+  // Generate direct link to most recent result
+  const getResultsLink = () => {
+    if (!mostRecentResult || !mostRecentResult.sessionId) {
+      return "/history";
+    }
+    return `/results?sessionId=${mostRecentResult.sessionId}`;
+  };
+
   return (
     <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm h-16 flex justify-between items-center shadow-sm px-4">
       <Link
@@ -101,7 +110,7 @@ export default function NavBar() {
       <div className="flex items-center gap-4">
         {mostRecentResult ? (
           <Link
-            href="/history"
+            href={getResultsLink()}
             className="hover:scale-110 transition-transform duration-200"
             title={text}
           >
