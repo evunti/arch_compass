@@ -364,6 +364,21 @@ export default function Questionnaire() {
     const newAnswers = [...answers];
     newAnswers[originalIndex] = value;
     setAnswers(newAnswers);
+
+    setTimeout(() => {
+      if (currentQuestionIndex < 27) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        const nextOriginalIndex =
+          shuffledQuestions[currentQuestionIndex + 1].originalIndex;
+        setAnswers((prev) => {
+          const updated = [...prev];
+          updated[nextOriginalIndex] = 0;
+          return updated;
+        });
+      } else {
+        handleSubmit();
+      }
+    }, 300);
   };
 
   const handleNext = () => {
@@ -557,19 +572,13 @@ export default function Questionnaire() {
           </div>
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-start">
           <button
             onClick={handlePrevious}
             disabled={currentQuestionIndex === 0}
             className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-400 transition-colors"
           >
             Previous
-          </button>
-          <button
-            onClick={handleNext}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-          >
-            {currentQuestionIndex === 27 ? "Complete Test" : "Next"}
           </button>
         </div>
       </div>
