@@ -155,11 +155,9 @@ export default function PreviousResults({
               </div>
               <button
                 onClick={() => {
-                  const searchParams = new URLSearchParams();
                   if (prevResult.sessionId) {
-                    searchParams.set("sessionId", prevResult.sessionId);
+                    router.push(`/results/${prevResult.sessionId}`);
                   }
-                  router.push(`/results?${searchParams.toString()}`);
                 }}
                 className="px-4 py-2 bg-purple-600 text-white rounded font-semibold hover:bg-purple-700 transition-colors"
               >

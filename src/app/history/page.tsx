@@ -45,11 +45,9 @@ export default function History() {
   useEffect(() => {
     if (items.length > 0) {
       const mostRecentResult = items[0];
-      const searchParams = new URLSearchParams();
       if (mostRecentResult.sessionId) {
-        searchParams.set("sessionId", mostRecentResult.sessionId);
+        router.push(`/results/${mostRecentResult.sessionId}`);
       }
-      router.push(`/results?${searchParams.toString()}`);
     }
   }, [items, router]);
 

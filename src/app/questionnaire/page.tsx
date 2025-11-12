@@ -489,7 +489,7 @@ export default function Questionnaire() {
 
       toast.success("Results saved!");
       // Navigate to results page with session ID
-      router.push(`/results?sessionId=${sessionId}`);
+      router.push(`/results/${sessionId}`);
     } catch (error) {
       console.error(error);
       toast.error("Failed to save results. Please try again.");

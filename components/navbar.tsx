@@ -96,7 +96,7 @@ export default function NavBar() {
     if (!mostRecentResult || !mostRecentResult.sessionId) {
       return "/history";
     }
-    return `/results?sessionId=${mostRecentResult.sessionId}`;
+    return `/results/${mostRecentResult.sessionId}`;
   };
 
   return (
