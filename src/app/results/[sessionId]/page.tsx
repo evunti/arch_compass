@@ -1,15 +1,15 @@
 "use client";
 import { useState, Suspense } from "react";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 import { toast } from "sonner";
-import { questions } from "../questionnaire/page";
-import ScoreBreakdown from "../../../components/scoreBreakdown";
-import { useSearchParams, useRouter } from "next/navigation";
-import NavBar from "../../../components/navbar";
+import { questions } from "../../questionnaire/page";
+import ScoreBreakdown from "../../../../components/scoreBreakdown";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
+import NavBar from "../../../../components/navbar";
 import PreviousResults, {
   PreviousResultsButton,
-} from "../../../components/PreviousResults";
+} from "../../../../components/PreviousResults";
 
 const archetypeColors = {
   cowboy: "emerald",
@@ -104,9 +104,9 @@ const personalityBlurbs = {
 };
 
 function ResultsContent() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const sessionId = searchParams.get("sessionId");
+  const params = useParams<{ sessionId: string }>();
+  const sessionId = params.sessionId;
 
   const handleRetakeTest = () => {
     router.push("/questionnaire");
